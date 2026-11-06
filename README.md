@@ -27,9 +27,10 @@ Tarayıcıda aç: **http://127.0.0.1:4173**
 | 20.16.0 – 20.x | ✅ desteklenir |
 | 21.x | ❌ desteklenmez (`pdf-parse`) |
 | 22.3.0 ve üzeri 22.x | ✅ desteklenir |
-| 24.x | ✅ desteklenir (geliştirme bu sürümde yapıldı) |
+| 24.x | ✅ desteklenir |
+| 26.x | ✅ desteklenir (geliştirme bu sürümde yapıldı) |
 
-Sürümünü öğrenmek için `node -v`. Depoda `.nvmrc` var (`24`), nvm kullanıyorsan `nvm use` yeterli.
+Sürümünü öğrenmek için `node -v`. Depoda `.nvmrc` var (`24` — en geniş uyumluluk için), nvm kullanıyorsan `nvm use` yeterli. Geliştirme Node 26.13.0'da yapıldı; CI matrisi 20.16 / 22 / 24 / 26 sürümlerini dener.
 
 ## GitHub'a yükleme
 

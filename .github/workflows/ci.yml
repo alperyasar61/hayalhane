@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: ['20.16.0', '22', '24']
+        node: ['20.16.0', '22', '24', '26']
 
     steps:
       - uses: actions/checkout@v4
@@ -26,12 +26,10 @@ jobs:
 
       - name: Sozdizimi kontrolu
         run: |
-          node --check server.js
-          node --check src/epub.js
-          node --check src/kinship.js
-          node --check src/llm.js
-          node --check public/app.js
-          node --check scripts/check-env.js
+          for f in server.js scripts/check-env.js public/app.js src/*.js; do
+            echo "kontrol: $f"
+            node --check "$f"
+          done
 
       - name: Sunucu acilis testi
         run: |

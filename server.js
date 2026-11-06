@@ -386,7 +386,8 @@ app.post('/api/world', express.raw({ type: '*/*', limit: '25mb' }), async (req, 
       story,
     });
   } catch (err) {
-    res.status(err.status || 500).json({ error: `Dosya okunamadı: ${err.message}` });
+    console.error('Dünya dosyası okunamadı:', err.message);
+    res.status(err.status || 500).json({ error: 'Dosya okunamadı. Desteklenen biçimler: .docx, .pdf, .txt, .md' });
   }
 });
 
@@ -402,7 +403,8 @@ app.post('/api/document', express.raw({ type: '*/*', limit: '25mb' }), async (re
     if (!text) return res.status(422).json({ error: 'Dosyadan metin çıkarılamadı.' });
     res.json({ filename, text, chars: text.length, words: text.split(/\s+/).filter(Boolean).length });
   } catch (err) {
-    res.status(err.status || 500).json({ error: `Dosya okunamadı: ${err.message}` });
+    console.error('Belge okunamadı:', err.message);
+    res.status(err.status || 500).json({ error: 'Dosya okunamadı. Desteklenen biçimler: .docx, .pdf, .txt, .md' });
   }
 });
 
@@ -594,8 +596,30 @@ app.post('/api/export/epub', async (req, res) => {
     res.send(buf);
   } catch (err) {
     console.error('EPUB hatası:', err);
-    res.status(500).json({ error: 'EPUB oluşturulamadı: ' + err.message });
+    res.status(500).json({ error: 'EPUB oluşturulamadı. Ayrıntı sunucu günlüğüne yazıldı.' });
   }
+});
+
+// Bilinmeyen API yolları JSON döner (HTML hata sayfası değil).
+app.use('/api', (req, res) => {
+  res.status(404).json({ error: 'Bilinmeyen uç: ' + req.method + ' ' + req.originalUrl });
+});
+
+// Merkezî hata yakalayıcı: yığın izi ve disk yolları istemciye sızmaz.
+app.use((err, req, res, next) => {
+  if (res.headersSent) return next(err);
+  const status = err.status || err.statusCode || 500;
+  const isClientError = status >= 400 && status < 500;
+  console.error(`[${status}] ${req.method} ${req.originalUrl}:`, err.message);
+  res.status(status).json({
+    error: isClientError
+      ? (err.type === 'entity.parse.failed'
+        ? 'İstek geçersiz: gövde geçerli JSON değil.'
+        : err.type === 'entity.too.large'
+          ? 'İstek geçersiz: gövde çok büyük.'
+          : 'İstek geçersiz.')
+      : 'Sunucu hatası. Ayrıntı sunucu günlüğüne yazıldı.',
+  });
 });
 
 app.listen(PORT, '127.0.0.1', () => {
