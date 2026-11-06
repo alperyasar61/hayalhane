@@ -240,11 +240,29 @@ assets/tessdata/   OCR dil verisi (tur + eng, yerel)
 data/project.json  Otomatik kayıt
 data/backups/      Otomatik yedekler (son 40)
 .github/workflows/ CI (Node 20.16 / 22 / 24 matrisi)
+.githooks/         pre-commit: hikâye verisi commit'ini engeller
 .nvmrc             Önerilen Node sürümü (24)
 .gitattributes     Satır sonu normalizasyonu (LF)
+ARASTIRMA-METODOLOJISI.md  İnceleme/doğrulama yöntemi (Ulak'a uyarlanabilir)
 ```
 
 **Kullanılan kütüphaneler:** `express` (sunucu), `mammoth` (docx okuma), `pdf-parse` (pdf okuma), `tesseract.js` (OCR), `docx` (Word yazma), `jszip` (EPUB paketleme), `cytoscape` (aile ağacı), `fuse.js` (bulanık arama), `sortablejs` (sahne sıralama), `turkish-deasciifier` (Türkçe karakter düzeltme). Hepsi MIT / Apache-2.0 / ISC — ticari kapalı kaynak projede de serbestçe kullanılabilir.
+
+## Hikâye verisi asla depoya girmez
+
+`data/` klasöründe hikâyeler, karakterler, dünya dosyası, resimler ve yedekler durur. Bu klasör **üç katmanlı** olarak korunur:
+
+1. **`.gitignore`** — `data/`, `**/project.json`, `**/backups/`, `*.hayalhane.json` engellenir.
+2. **`.githooks/pre-commit`** — biri `git add -f` ile zorlasa bile commit **durdurulur**. Kurulum: `git config core.hooksPath .githooks` (depo klonlandıktan sonra bir kez).
+3. **Uzak depo denetimi** — `git ls-tree -r --name-only origin/main | grep "^data/"` boş dönmelidir.
+
+Doğrulama:
+
+```powershell
+git check-ignore -v data/project.json          # .gitignore eşleşmesini gösterir
+git log --all --name-only | Select-String "^data/"   # geçmişte sızıntı var mı
+git ls-tree -r --name-only origin/main | Select-String "^data/"  # uzakta var mı
+```
 
 ## Arayüz yapısı
 

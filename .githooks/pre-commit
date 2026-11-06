@@ -1,0 +1,19 @@
+#!/bin/sh
+# Hikaye verisinin depoya girmesini engeller.
+# Kurulum: git config core.hooksPath .githooks
+
+blocked=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '^(data/|.*project\.json$|.*project\.pretest\.json$|.*\.hayalhane\.json$|.*/backups/)')
+
+if [ -n "$blocked" ]; then
+  echo ""
+  echo "HATA: Hikaye verisi commit'e eklenmis. Commit durduruldu."
+  echo ""
+  echo "$blocked" | sed 's/^/  - /'
+  echo ""
+  echo "Bu dosyalar kisisel hikaye/karakter verisi icerir ve depoya girmemeli."
+  echo "Cozum: git restore --staged <dosya>"
+  echo ""
+  exit 1
+fi
+
+exit 0

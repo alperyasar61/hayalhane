@@ -1,3 +1,33 @@
-node_modules/
+# ---------- HİKÂYE VERİSİ: ASLA DEPOYA GİRMEZ ----------
+# data/ içinde hikâyeler, karakterler, dünya dosyası, resimler ve yedekler var.
 data/
+data/**
+**/project.json
+**/project.pretest.json
+**/backups/
+*.hayalhane.json
+
+# ---------- bağımlılıklar ----------
+node_modules/
+
+# ---------- günlükler ----------
 *.log
+npm-debug.log*
+logs/
+
+# ---------- geçici / test ----------
+tmp-*
+tmp*/
+*.tmp
+.DS_Store
+Thumbs.db
+
+# ---------- ortam değişkenleri (API anahtarları) ----------
+.env
+.env.*
+!.env.example
+
+# ---------- editör ----------
+.vscode/*
+!.vscode/extensions.json
+.idea/
