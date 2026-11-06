@@ -1,8 +1,10 @@
 # Hayalhâne — Oyun Hikâye Atölyesi
 
-> ## ⚠️ ÜRETİM HAZIR DEĞİL
+> ## ⚠️ ÜRETİM HAZIR DEĞİL — DAHA BİTMEDİ
 >
-> **Bu proje henüz üretim (production) kullanımına hazır değildir.** Geliştirme sürmektedir; arayüz, veri biçimi ve API uçları haber verilmeden değişebilir. Gerçek/önemli verilerle kullanmadan önce yedek al. Sürüm numarası `0.x` iken kararlılık garantisi verilmez.
+> **Bu proje henüz tamamlanmadı ve üretim (production) kullanımına hazır değildir.** Geliştirme sürmektedir; arayüz, veri biçimi ve API uçları haber verilmeden değişebilir. **Eksikleri vardır** — bilinen ve henüz bilinmeyen hatalar, yarım kalmış özellikler ve test edilmemiş kenar durumlar bulunur. Gerçek/önemli verilerle kullanmadan önce **mutlaka yedek al**. Sürüm numarası `0.x` iken kararlılık garantisi verilmez.
+>
+> **Lisans MIT'tir:** kodu herkes özgürce kullanabilir, değiştirebilir ve paylaşabilir (bkz. [Lisans](#lisans)). Ancak lisans "kullanma izni" verir, **"tamamlandı" garantisi vermez** — yazılım olduğu gibi (as-is) sunulur, hiçbir garanti yoktur. Kullanan kişi bunu bilerek kullanmalıdır.
 
 Mikrofonla konuşup yazıya çeviren, yazdıklarını yorumlayan, dünya dosyası okuyan ve metni bölüm bölüm sahneleyen yerel web uygulaması.
 
@@ -34,15 +36,16 @@ Sürümünü öğrenmek için `node -v`. Depoda `.nvmrc` var (`24` — en geniş
 
 ## GitHub'a yükleme
 
-> **Durum: üretim öncesi.** Depo teknik olarak hatasız yüklenir (derleme adımı yok, `npm ci` sonrası `npm start` yeterli) ama proje **üretim için hazır değildir** — bkz. yukarıdaki uyarı. Depoyu herkese açık yayınlarken bunu göz önünde tut.
+> **Durum: üretim öncesi — proje bitmedi.** Depo teknik olarak hatasız yüklenir (derleme adımı yok, `npm ci` sonrası `npm start` yeterli) ama proje **tamamlanmadı ve üretim için hazır değildir** — bkz. yukarıdaki uyarı ve [Bilinen eksikler](#bilinen-eksikler). Depoyu herkese açık yayınlarken bunu göz önünde tut.
 
 Yüklemeden önce bilinmesi gerekenler:
 
 - **`data/` yüklenmez** (`.gitignore` içinde). Bu bilinçli: hikâyelerin, karakterlerin ve resimlerin senin makinende kalır. Depoyu klonlayan biri boş bir atölye ile başlar — sunucu `data/` klasörünü kendisi oluşturur.
 - **`node_modules/` yüklenmez.** `package-lock.json` depoda olduğu için `npm ci` birebir aynı sürümleri kurar.
 - **`assets/tessdata/` (~9,9 MB) depoya dahildir.** Bu iki `.traineddata` dosyası OCR'ın internet olmadan çalışmasını sağlar. Dosya başına GitHub sınırı 100 MB olduğu için sorun çıkmaz; sadece depo biraz büyür. Küçültmek istersen `.gitignore`'a `assets/tessdata/` ekleyip README'ye indirme adımı yazmak gerekir — ama o zaman OCR ilk kullanımda internet ister.
-- **`.github/workflows/ci.yml`** her push'ta Node 20.16 / 22 / 24 matrisinde `npm ci` + `node --check` + sunucu açılış testi çalıştırır. Böylece "bende çalışıyordu" durumu ortaya çıkmaz.
+- **`.github/workflows/ci.yml`** her push'ta Node 20.16 / 22 / 24 / 26 matrisinde `npm ci` + `node --check` + sunucu açılış testi çalıştırır. Böylece "bende çalışıyordu" durumu ortaya çıkmaz.
 - **`.gitattributes`** satır sonlarını `LF`'e sabitler; Windows'ta geliştirip Linux'ta çalıştırırken dosyalar bozulmaz.
+- **`LICENSE`** MIT lisansıdır — herkes kullanabilir, ama proje **bitmedi** (bkz. [Lisans](#lisans)).
 
 İlk yükleme:
 
@@ -240,10 +243,11 @@ public/            Arayüz (index.html, styles.css, app.js)
 assets/tessdata/   OCR dil verisi (tur + eng, yerel)
 data/project.json  Otomatik kayıt
 data/backups/      Otomatik yedekler (son 40)
-.github/workflows/ CI (Node 20.16 / 22 / 24 matrisi)
+.github/workflows/ CI (Node 20.16 / 22 / 24 / 26 matrisi)
 .githooks/         pre-commit: hikâye verisi commit'ini engeller
 .nvmrc             Önerilen Node sürümü (24)
 .gitattributes     Satır sonu normalizasyonu (LF)
+LICENSE            MIT lisansı
 ARASTIRMA-METODOLOJISI.md  İnceleme/doğrulama yöntemi (Ulak'a uyarlanabilir)
 ```
 
@@ -280,3 +284,42 @@ git ls-tree -r --name-only origin/main | Select-String "^data/"  # uzakta var m�
 Sol menüdeki beş `.side-nav-item.tab` düğmesi `data-view` taşır; `showView(view)` hem `.tab.active` hem `.view.active` sınıfını değiştirir ve breadcrumb'ı günceller. Hikâye listesi `renderSidebarStories()` ile çizilir; `#sideStoryList` üzerindeki tek bir delege click dinleyicisi `data-act="open"` / `data-act="delete"` ayrımını yapar. `state.scenes` bir accessor'dür ve her zaman etkin hikâyenin `scenes[]` dizisine bağlanır — bu yüzden sahne planı hikâye bazlıdır.
 
 Karakter kartlarındaki onay kutuları `selectedCharIds` (bir `Set`) içine yazar; `renderBulkBar()` seçim varsa `#bulkBar` çubuğunu gösterir. Toplu işlemler `document` üzerindeki tek bir delege click dinleyicisiyle `data-bulk` özniteliğinden yürütülür. Notlar `state.notes` dizisinde tutulur; `renderNotes()` etiket filtresi düğmelerini (`data-nfilter`) ve kartları çizer, `data-nact` / `data-nfield` öznitelikleri delege dinleyicilerle işlenir.
+
+## Bilinen eksikler
+
+Bu proje **bitmedi**. Aşağıdakiler bilinen, açıkça kabul edilmiş eksiklerdir — "hata" değil, henüz yapılmamış işler:
+
+| # | Eksik | Durum |
+|---|---|---|
+| 1 | **Zengin metin editörü** (kalın/italik/başlık biçimlendirme) | ⬜ Yok — düz metin + Markdown kullanılıyor |
+| 2 | **Otomatik testler** (`tests/` klasörü, birim testi) | ⬜ Yok — doğrulama elle + CI sözdizimi kontrolüyle yapılıyor |
+| 3 | **Çok kullanıcılı / kimlik doğrulama** | ⬜ Yok — tek kullanıcı, yalnız `127.0.0.1`'e bağlanır |
+| 4 | **3B model desteği** (`.glb` / `.gltf`) | ⬜ Yok — karakter görseli 2B resim |
+| 5 | **Bulut eşitleme / çok cihaz** | ⬜ Yok — veri yalnız yerel diskte |
+| 6 | **Mobil için özel arayüz** | ⚠️ Kısmi — duyarlı tasarım var, mobilde tam test edilmedi |
+| 7 | **Erişilebilirlik (a11y) denetimi** | ⬜ Yapılmadı — klavye/ekran okuyucu tam doğrulanmadı |
+| 8 | **Çok dilli arayüz** (İngilizce vb.) | ⬜ Yok — arayüz yalnız Türkçe |
+| 9 | **Veri biçimi sürümleme / göç (migration)** | ⚠️ Basit `migrate()` var, şema sürümü tutulmuyor |
+| 10 | **Gerçek kullanıcıyla saha testi** | ⬜ Yapılmadı |
+
+Ayrıca: arayüz, veri biçimi ve API uçları **haber verilmeden değişebilir**. Sürüm `1.0.0`'a çıkana kadar veri biçiminde uyumsuz değişiklik olabilir — bu yüzden **yedek almak** önemlidir (sol menü → *Projeyi indir*).
+
+Katkı sağlamak veya eksik bildirmek için GitHub'da **issue** açabilirsiniz.
+
+## Lisans
+
+**MIT Lisansı** — bkz. [LICENSE](LICENSE).
+
+Kısaca: **herkes kullanabilir.** Kodu kopyalayabilir, değiştirebilir, kendi projenize katabilir, ticari olarak satabilir, kapalı kaynak bir üründe kullanabilirsiniz. Tek şart, telif hakkı bildirimini ve lisans metnini kopyaladığınız yerde tutmanızdır.
+
+**Ama dikkat — lisans "bitti" demek değildir.** MIT, yazılımı **"olduğu gibi" (as-is)** sunar: hiçbir garanti yoktur, hata olabilir, veri kaybı olabilir. Proje **hâlâ geliştiriliyor**, eksikleri var (bkz. yukarıdaki üretim uyarısı). Lisans, "kullanma izni" verir; "tamamlandı" veya "hatasız" demez. Kullanan kişi bunu bilerek kullanmalı ve **verisini yedeklemelidir**.
+
+| Konu | Durum |
+|---|---|
+| Kullanım / değiştirme / dağıtma | ✅ Serbest (MIT) |
+| Ticari kullanım | ✅ Serbest (MIT) |
+| Garanti | ❌ Yok — "olduğu gibi" |
+| Geliştirme durumu | 🚧 Devam ediyor, eksikleri var |
+| Üretim kullanımı | ⚠️ Önerilmez (henüz hazır değil) |
+
+Bağımlılıkların hepsi MIT / Apache-2.0 / ISC lisanslıdır; bu projenin MIT lisansıyla uyumludur.

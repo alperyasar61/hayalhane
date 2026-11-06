@@ -5,7 +5,7 @@
   "description": "Hayalhâne: sesli hikaye atolyesi - mikrofonla yaz, dunya dosyasi yukle, sahnelere bol, onayla. (Uretim oncesi / pre-production)",
   "main": "server.js",
   "author": "alperyasar61",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/alperyasar61/hayalhane.git"
