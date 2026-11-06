@@ -1,0 +1,360 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hayalhâne — Oyun Hikâye Atölyesi</title>
+<link rel="icon" href="hayalhane-icon.png" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="app-shell">
+<aside class="sidebar">
+  <div class="brand-lockup">
+    <div class="brand-mark"><img src="hayalhane.png" alt="Hayalhâne" /></div>
+    <div class="brand-text">
+      <div class="brand-name">HAYALHÂNE</div>
+      <div class="brand-subtitle">TASVİR-İ HAYAL</div>
+    </div>
+  </div>
+
+  <div class="workspace-label"><span>ÇALIŞMA ALANI</span><span class="live-pip"></span> YEREL</div>
+
+  <button class="new-project-button" id="sideAddStory" title="Yeni bir hikâye aç">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+    Yeni hikâye <span>+</span>
+  </button>
+
+  <div class="sidebar-section-title">HİKÂYELER <span id="sideStoryCount">00</span></div>
+  <div class="project-list" id="sideStoryList"></div>
+
+  <div class="sidebar-section-title">BÖLÜMLER</div>
+  <div class="project-list">
+    <button class="side-nav-item tab active" data-view="write">
+      <span class="project-nav-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>
+      <span class="project-nav-copy"><strong>Yaz &amp; Konuş</strong><small>mikrofon · taslak</small></span>
+    </button>
+    <button class="side-nav-item tab" data-view="world">
+      <span class="project-nav-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg></span>
+      <span class="project-nav-copy"><strong>Dünya Dosyası</strong><small>evren · kurallar</small></span>
+    </button>
+    <button class="side-nav-item tab" data-view="characters">
+      <span class="project-nav-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg></span>
+      <span class="project-nav-copy"><strong>Karakterler</strong><small><span id="charCount">0</span> kart</small></span>
+    </button>
+    <button class="side-nav-item tab" data-view="scenes">
+      <span class="project-nav-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 10v10"/></svg></span>
+      <span class="project-nav-copy"><strong>Sahneler</strong><small><span id="sceneCount">0</span> sahne</small></span>
+    </button>
+    <button class="side-nav-item tab" data-view="notes">
+      <span class="project-nav-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9l6-6V5a2 2 0 0 0-2-2Z"/><path d="M14 21v-4a2 2 0 0 1 2-2h4"/><path d="M7 8h8M7 12h5"/></svg></span>
+      <span class="project-nav-copy"><strong>Notlar</strong><small><span id="noteCount">0</span> not</small></span>
+    </button>
+  </div>
+
+  <div class="sidebar-bottom">
+    <button class="btn ghost small backup-btn" id="openBackups" title="Otomatik yedekleri gör ve geri yükle">⟲ Yedekler</button>
+    <div class="side-data-actions">
+      <button class="btn ghost small" id="exportProject" title="Tüm projeyi (hikâyeler, karakterler, dünya dosyası, resimler) tek JSON dosyası olarak indir">⭳ Projeyi indir</button>
+      <button class="btn ghost small" id="importProject" title="Daha önce indirdiğin proje yedeğini geri yükle">⭱ Projeyi yükle</button>
+    </div>
+    <input type="file" id="importProjectInput" accept=".json,application/json" hidden />
+    <div class="sidebar-version"><span>HAYALHÂNE / 0.1</span><span class="pre-prod">ÜRETİM ÖNCESİ</span></div>
+  </div>
+</aside>
+
+<div class="main-shell">
+<header class="topbar">
+  <div class="breadcrumbs">
+    <span>HAYALHÂNE</span>
+    <span class="crumb-slash">/</span>
+    <span id="crumbStory">Hikâye</span>
+    <span class="crumb-slash">/</span>
+    <span id="crumbView">Yaz &amp; Konuş</span>
+  </div>
+  <div class="topbar-right">
+    <span class="pre-prod-badge" title="Bu sürüm geliştirme aşamasındadır; üretim kullanımına hazır değildir">ÜRETİM ÖNCESİ</span>
+    <button class="btn primary small" id="quickUpload" title="Word / PDF / metin dosyası ekle">＋ Dosya Ekle</button>
+    <div class="status" id="saveStatus">hazır</div>
+  </div>
+</header>
+
+<main>
+  <!-- ============ YAZ & KONUŞ ============ -->
+  <section class="view active" id="view-write">
+    <div class="split">
+      <div class="panel editor-panel">
+        <div class="panel-head">
+          <h2>Metin</h2>
+          <div class="head-actions">
+            <input class="story-title-input" id="storyTitleInput" placeholder="Hikâyenin adı" title="Hikâyenin adı — yazdığın an kaydedilir" />
+            <span class="counter" id="wordCount">0 kelime</span>
+            <button class="btn ghost" id="clearText" title="Metni temizle">Temizle</button>
+            <button class="btn ghost small" id="exportDocx" title="Hikâyeyi, sahne planını ve karakterleri Word dosyası olarak indir">Word indir</button>
+            <button class="btn ghost small" id="exportEpub" title="Hikâyeyi e-kitap (EPUB) olarak indir — telefon ve okuyucularda açılır">EPUB indir</button>
+            <button class="btn ghost small" id="exportPdf" title="Yazdırma penceresini açar; oradan “PDF olarak kaydet” seç">PDF indir</button>
+            <button class="btn ghost small" id="speakBtn" title="Hikâyeyi sesli oku (tarayıcı sesi)">🔊 Sesli oku</button>
+            <button class="btn ghost small" id="deasciifyBtn" title="Aksansız yazılmış Türkçe harfleri düzelt (kardes → kardeş)">Türkçe düzelt</button>
+            <button class="btn ghost small danger" id="deleteStoryBtn" title="Bu hikâyeyi metni, sahneleri ve karakterleriyle birlikte sil">Hikâyeyi sil</button>
+          </div>
+        </div>
+
+        <div class="mic-bar">
+          <button class="btn mic" id="micBtn">
+            <span class="mic-icon">●</span>
+            <span id="micLabel">Mikrofonu Aç</span>
+          </button>
+          <label class="switch">
+            <input type="checkbox" id="voiceCommands" checked />
+            <span>Sesli komutlar</span>
+          </label>
+          <label class="switch">
+            <input type="checkbox" id="autoRestart" checked />
+            <span>Sessizlikte devam et</span>
+          </label>
+          <label class="switch" title="Tanınan cümle metne yazılmadan önce onayını ister">
+            <input type="checkbox" id="confirmSpeech" />
+            <span>Onaylayarak ekle</span>
+          </label>
+          <label class="switch" title="Cihaz üstü tanıma (Chrome 138+). İnternet gerekmez; dil paketi bir kez indirilir.">
+            <input type="checkbox" id="offlineSpeech" />
+            <span>Çevrimdışı mod</span>
+          </label>
+          <button class="btn ghost small" id="undoSpeech" title="Mikrofonla eklenen son parçayı geri al">↶ Son cümleyi geri al</button>
+          <button class="btn ghost small" id="openDict" title="Yanlış duyulan kelimeleri düzeltme sözlüğü">Sözlük</button>
+          <span class="mic-state" id="micState">kapalı</span>
+        </div>
+
+        <div class="dict-panel" id="dictPanel" hidden>
+          <div class="dict-head">
+            <strong>Düzeltme sözlüğü</strong>
+            <span class="hint">Her satıra <code>yanlış duyulan = doğrusu</code> yaz. Mikrofon metni yazarken otomatik düzeltilir.</span>
+            <button class="btn ghost small" id="closeDict">Kapat</button>
+          </div>
+          <textarea id="dictText" spellcheck="false" placeholder="örnek:&#10;hayal hane = Hayalhâne&#10;tufan = Tufan&#10;anne terliği = anne terliği"></textarea>
+          <div class="dict-foot">
+            <button class="btn primary small" id="saveDict">Kaydet</button>
+            <button class="btn ghost small" id="resetDict">Varsayılanlara dön</button>
+            <span class="hint" id="dictCount"></span>
+          </div>
+        </div>
+
+        <div class="interim" id="interim" hidden></div>
+
+        <div class="speech-pending" id="speechPending" hidden>
+          <span class="sp-label">Duyulan:</span>
+          <span class="sp-text" id="speechPendingText"></span>
+          <button class="btn primary small" id="speechAccept">Ekle</button>
+          <button class="btn ghost small" id="speechReject">Vazgeç</button>
+        </div>
+
+        <textarea id="editor" spellcheck="true"
+          placeholder="Mikrofonu açıp konuş ya da buraya yaz…&#10;&#10;Örnek: Karanlık koridorda yürürken kapının ardından bir ses duydu. Elinde tuttuğu fener titriyordu."></textarea>
+
+        <div class="editor-foot">
+          <button class="btn primary" id="analyzeBtn">Analiz Et</button>
+          <button class="btn" id="storyBtn" title="Noktalama ve paragrafları düzelt">Hikâyeleştir</button>
+          <button class="btn" id="breakdownBtn">Sahnelere Böl</button>
+          <button class="btn ghost" id="openStoryFile" title="Bilgisayarındaki hikâye dosyasını (.txt/.md/.docx/.pdf) bu hikâyeye yükle">Hikâye dosyası aç</button>
+          <input type="file" id="storyFileInput" accept=".txt,.md,.markdown,.docx,.pdf,.png,.jpg,.jpeg,.webp,.bmp,.tif,.tiff" hidden />
+          <span class="hint" id="editorHint">Analiz, yazdıklarını yorumlar; önerileri onayınla metne ekler.</span>
+        </div>
+      </div>
+
+      <aside class="panel analysis-panel">
+        <div class="panel-head">
+          <h2>Yorum &amp; Öneriler</h2>
+          <button class="btn ghost small" id="clearAnalysis">Temizle</button>
+        </div>
+        <div id="analysisBody" class="analysis-body">
+          <div class="empty">
+            <p>Henüz analiz yok.</p>
+            <p class="muted">Metni yaz, <strong>Analiz Et</strong>'e bas. Burada güçlü yanlar, eksikler ve onayına sunulan öneriler çıkar.</p>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============ DÜNYA DOSYASI ============ -->
+  <section class="view" id="view-world">
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Dünya Dosyası</h2>
+        <span class="hint">.txt · .md · .docx · .pdf — evren, kurallar, karakter listesi</span>
+      </div>
+
+      <div class="dropzone" id="dropzone">
+        <input type="file" id="worldFile" accept=".txt,.md,.markdown,.docx,.pdf,.png,.jpg,.jpeg,.webp,.bmp,.tif,.tiff" hidden />
+        <p class="dz-title">Word / PDF / metin dosyasını buraya sürükle</p>
+        <p class="muted">veya <button class="link" id="pickFile">bilgisayardan seç</button></p>
+        <p class="muted" style="margin-top:10px">Yüklenen dosya otomatik olarak <strong>Markdown'a</strong> çevrilir.</p>
+      </div>
+
+      <div id="worldInfo" class="world-info" hidden>
+        <div class="world-meta">
+          <strong id="worldName"></strong>
+          <span class="muted" id="worldStats"></span>
+          <button class="btn ghost small" id="removeWorld">Kaldır</button>
+        </div>
+
+        <div class="world-tabs">
+          <button class="wtab active" data-wtab="story">Hikâye</button>
+          <button class="wtab" data-wtab="md">Markdown (AI için)</button>
+          <button class="wtab" data-wtab="raw">Ham metin</button>
+          <button class="btn primary small" id="downloadMd" style="margin-left:auto">.md indir</button>
+          <button class="btn ghost small" id="copyMd">Kopyala</button>
+        </div>
+
+        <textarea id="worldText" class="world-text" spellcheck="false"></textarea>
+        <p class="hint" id="worldHint">Markdown sürümü analizde bağlam olarak kullanılır. Düzenlemeler otomatik kaydedilir.</p>
+
+        <div class="world-actions">
+          <button class="btn primary" id="worldBreakdown">Bu dosyayı sahnelere böl</button>
+          <button class="btn" id="worldToEditor">Metne aktar</button>
+          <span class="hint">Sahnelere böl → Sahneler sekmesinde bölüm bölüm plan çıkar.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ KARAKTERLER ============ -->
+  <section class="view" id="view-characters">
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Karakter Kartları</h2>
+        <div class="head-actions">
+          <button class="btn ghost small" id="extractChars" title="Dünya dosyasından karakterleri çıkar">Dünya dosyasından çıkar</button>
+          <button class="btn ghost small" id="extractTies" title="Dünya metninden aile bağlarını çıkar ve boş notları doldur">Aile bağlarını çıkar</button>
+          <button class="btn ghost small" id="addChar">+ Karakter</button>
+          <button class="btn ghost small" id="exportChars">Dışa aktar</button>
+        </div>
+      </div>
+      <p class="hint">Hikâyeden bağımsız karakter dosyası. Kartı aç; adı, özellikleri, aile bağlarını ve resmi düzenle. Adı değiştirdiğinde hikâye metnindeki isim de güncellenir.</p>
+
+      <div class="char-toolbar">
+        <input class="char-search" id="charSearch" type="search" placeholder="Tüm hikâyelerde ara: isim, takma ad, aile, özellik…" />
+        <select class="char-story-filter" id="charStoryFilter" title="Hikâyeye göre filtrele"></select>
+        <div class="char-filters">
+          <button class="cfilter active" data-cfilter="all">Tümü</button>
+          <button class="cfilter" data-cfilter="ana">Ana karakterler</button>
+          <button class="cfilter" data-cfilter="yan">Yan karakterler</button>
+        </div>
+        <div class="char-view-toggle">
+          <button class="cview active" data-cview="cards" title="Kart görünümü">Kartlar</button>
+          <button class="cview" data-cview="tree" title="Aile ağacı görünümü">Aile Ağacı</button>
+        </div>
+      </div>
+
+      <div class="tree-wrap" id="treeWrap" hidden>
+        <div class="tree-bar">
+          <span class="hint">Düğüme tıkla → karakter kartı açılır. Aileye göre renklenir; bağlar aile grubu ve notlardan çıkarılır.</span>
+          <div class="tree-actions">
+            <button class="btn ghost small" id="treeFit" title="Grafiği ekrana sığdır">Sığdır</button>
+            <button class="btn ghost small" id="treeRelayout" title="Yeniden yerleştir">Yeniden yerleştir</button>
+          </div>
+        </div>
+        <div id="cy" class="cy-canvas"></div>
+        <div class="tree-legend" id="treeLegend"></div>
+      </div>
+
+      <input type="file" id="charImageInput" accept="image/*" hidden />
+
+      <div class="bulk-bar" id="bulkBar" hidden>
+        <span class="bulk-count" id="bulkCount">0 karakter seçili</span>
+        <div class="bulk-actions">
+          <button class="btn ghost small" data-bulk="selectall" id="bulkSelectAll">Görünenleri seç</button>
+          <select id="bulkRoleSelect" title="Rolü topluca değiştir">
+            <option value="">Rol…</option>
+            <option value="ana">Ana karakter</option>
+            <option value="yan">Yan karakter</option>
+          </select>
+          <button class="btn ghost small" data-bulk="role">Uygula</button>
+          <input class="note-tag-input" id="bulkFamilyInput" placeholder="Aile adı…" title="Seçili karakterleri bu aileye taşı" />
+          <button class="btn ghost small" data-bulk="family">Taşı</button>
+          <select id="bulkStorySelect" title="Seçili karakterleri bir hikâyeye bağla"></select>
+          <button class="btn ghost small" data-bulk="story">Bağla</button>
+          <button class="btn ghost small danger" data-bulk="delete">Seçilenleri sil</button>
+          <button class="btn ghost small" data-bulk="clear">Seçimi kaldır</button>
+        </div>
+      </div>
+
+      <div class="kin-hint" id="kinHint" hidden></div>
+
+      <div id="charList" class="char-list"></div>
+      <div class="empty" id="charEmpty">
+        <p>Henüz karakter yok.</p>
+        <p class="muted">Dünya dosyası yüklüyse <strong>Dünya dosyasından çıkar</strong>'a bas ya da elle karakter ekle.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SAHNELER ============ -->
+  <section class="view" id="view-scenes">
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Bölüm / Sahne Planı</h2>
+        <div class="head-actions">
+          <select class="story-select" id="sceneStorySelect" title="Hangi hikâyenin sahne planı"></select>
+          <button class="btn primary small" id="addScene" title="Bu hikâyeye boş bir sahne ekle">＋ Sahne ekle</button>
+          <button class="btn ghost small" id="exportScenes">Dışa aktar</button>
+        </div>
+      </div>
+      <p class="hint">Sahne planı hikâye bazlıdır: her hikâyenin kendi sahneleri vardır. <strong>＋ Sahne ekle</strong> ile elle sahne ekle, <strong>Sahnelere Böl</strong> ile metinden otomatik çıkar. Sahneleri sürükleyerek sırala, başlık ve özeti düzenle, hazır olanı onayla.</p>
+      <div id="sceneList" class="scene-list"></div>
+      <div class="empty" id="sceneEmpty">
+        <p>Bu hikâyede henüz sahne yok.</p>
+        <p class="muted">Metni yazıp <strong>Sahnelere Böl</strong>'e bas ya da elle sahne ekle.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ NOTLAR ============ -->
+  <section class="view" id="view-notes">
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Notlar</h2>
+        <div class="head-actions">
+          <input class="char-search" id="noteSearch" type="search" placeholder="Notlarda ara…" />
+          <button class="btn primary small" id="addNote" title="Yeni not ekle">＋ Not ekle</button>
+          <button class="btn ghost small" id="exportNotes" title="Notları Markdown olarak indir">Dışa aktar</button>
+        </div>
+      </div>
+      <p class="hint">Hikâyeden bağımsız fikir defteri: aklına gelen sahne, replik, mekân ya da çözülmesi gereken konu. Bir notu <strong>hikâyeye bağlayabilir</strong>, <strong>sabitleyebilir</strong> (üstte kalır) ve <strong>etikete</strong> göre filtreleyebilirsin. Her tuşta otomatik kaydedilir.</p>
+
+      <div class="note-toolbar">
+        <div class="note-filters" id="noteFilters"></div>
+        <span class="hint" id="noteStats"></span>
+      </div>
+
+      <div id="noteList" class="note-list"></div>
+      <div class="empty" id="noteEmpty">
+        <p>Henüz not yok.</p>
+        <p class="muted"><strong>＋ Not ekle</strong>'ye bas ya da aşağıdaki hızlı ekleme kutusunu kullan.</p>
+      </div>
+
+      <div class="note-quick">
+        <input id="quickNote" placeholder="Hızlı not: yaz ve Enter'a bas…" />
+        <button class="btn primary small" id="quickNoteAdd">Ekle</button>
+      </div>
+    </div>
+  </section>
+</main>
+</div>
+</div>
+
+<div class="modal" id="backupModal" hidden>
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3>Otomatik yedekler</h3>
+      <button class="btn ghost small" id="closeBackups">Kapat</button>
+    </div>
+    <p class="hint">Proje her kaydedildiğinde ve içerik azaldığında otomatik yedek alınır. Bir yedeği geri yüklemek için <strong>Geri yükle</strong>'ye bas.</p>
+    <div id="backupList" class="backup-list"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+<script src="app.js"></script>
+</body>
+</html>

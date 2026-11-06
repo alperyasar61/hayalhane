@@ -1,0 +1,30 @@
+{
+  "name": "oyun-taslak-masasi",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Hayalhâne: sesli hikaye atolyesi - mikrofonla yaz, dunya dosyasi yukle, sahnelere bol, onayla. (Uretim oncesi / pre-production)",
+  "main": "server.js",
+  "engines": {
+    "node": ">=20.16.0 <21 || >=22.3.0",
+    "npm": ">=10"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "check": "node scripts/check-env.js"
+  },
+  "dependencies": {
+    "cytoscape": "^3.34.4",
+    "docx": "^9.15.2",
+    "express": "^5.3.0",
+    "fuse.js": "^7.5.0",
+    "jszip": "^3.10.2",
+    "mammoth": "^1.13.0",
+    "pdf-parse": "^2.4.5",
+    "sortablejs": "^1.15.7",
+    "tesseract.js": "^7.0.0",
+    "turkish-deasciifier": "^1.0.0"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^25.16.0"
+  }
+}
